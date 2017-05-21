@@ -24,7 +24,7 @@ class FieldMixin(object):
 
     def unflat(self, flat, delimiter='__'):
         pos = len(self.prefix) + 2
-        flat = dict((key[pos:], value) for key, value in flat.iteritems())
+        flat = dict((key[pos:], value) for key, value in flat.items())
         return self.deepen(flat, delimiter=delimiter)
 
     def is_valid(self, delimiter='__'):
@@ -83,7 +83,7 @@ class Dict(FieldMixin, validators.Dict):
     def widgets(self, id='', delimiter='__', parent='', attribute='widgets'):
         prefix = id + delimiter if id else ''
         data = self.get_included()
-        for name, field in data.iteritems():
+        for name, field in data.items():
             if not hasattr(field, attribute):
                 continue
             for widget in getattr(field, attribute)(prefix + name,
@@ -117,7 +117,7 @@ class DeclarativeFieldMeta(validators.DeclarativeMeta):
     def __new__(cls, name, bases, attrs):
         attrs['prefix'] = attrs.get('prefix', 'form')
         attrs = OrderedDict(
-                sorted([(k, v) for k, v in attrs.iteritems()],
+                sorted([(k, v) for k, v in attrs.items()],
                     cmp=lambda x, y: cmp(getattr(x[1], 'order_counter', None),
                                          getattr(y[1], 'order_counter', None))
                     )
@@ -125,5 +125,5 @@ class DeclarativeFieldMeta(validators.DeclarativeMeta):
         return validators.DeclarativeMeta.__new__(cls, name, bases, attrs)
 
 
-class Declarative(Dict):
-    __metaclass__ = DeclarativeFieldMeta
+class Declarative(Dict, metaclass=DeclarativeFieldMeta):
+    pass

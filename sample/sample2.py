@@ -12,9 +12,9 @@ Form = forms.Tuple(forms.String(name='Your name'), forms.Integer(name='Age'))
 def hello():
     if request.form:
         form = Form(request.form, False)
-        print 'Validate'
+        print('Validate')
         if form.is_valid():
-            print 'Cool!'
+            print('Cool!')
             # Use form.data as validated structure
     else:
         form = Form(validate=False)

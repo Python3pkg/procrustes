@@ -125,8 +125,8 @@ class Tuple(Base):
 
     def deepen(self, flat, delimiter='__'):
         collector = {}
-        set_nums = set(xrange(self.len_types))
-        for key, flatchild in sorted(group_by_key(flat, delimiter).iteritems()):
+        set_nums = set(range(self.len_types))
+        for key, flatchild in sorted(group_by_key(flat, delimiter).items()):
             try:
                 number = int(key)
             except ValueError:
@@ -183,7 +183,7 @@ class List(Base):
 
     def deepen(self, flat, delimiter='__'):
         return [self.type.deepen(flatchild) for flatchild in
-                group_by_key(flat, delimiter).itervalues()]
+                group_by_key(flat, delimiter).values()]
 
 
 class Dict(Base):
@@ -198,7 +198,7 @@ class Dict(Base):
         if not isinstance(self.raw_data, dict):
             raise ValidationError('Value must be dict')
         instances = OrderedDict()
-        for name, typ in self.named_types.iteritems():
+        for name, typ in self.named_types.items():
             instances[name] = typ(self.raw_data.get(name), True)
         return instances
 
@@ -207,27 +207,27 @@ class Dict(Base):
         if not self.validated_data:
             return
         return dict((name, value.data) for name, value
-                    in self.validated_data.iteritems())
+                    in self.validated_data.items())
 
     def itererrors(self):
         if self.error:
             yield self.error
         if self.absent:
             raise StopIteration()
-        for name, value in self.validated_data.iteritems():
+        for name, value in self.validated_data.items():
             for error in value.itererrors():
                 yield error
 
     def get_included(self):
         if not self.validated_data:
             return OrderedDict((name, typ(None, False)) for name, typ
-                               in self.named_types.iteritems())
+                               in self.named_types.items())
         return self.validated_data
 
     def flatten(self, delimiter='__'):
         if not self.validated_data:
             raise StopIteration()
-        for name, value in self.validated_data.iteritems():
+        for name, value in self.validated_data.items():
             for key, data in value.flatten(delimiter):
                 tail = delimiter + key if key else ''
                 yield name + tail, data
@@ -235,7 +235,7 @@ class Dict(Base):
     def deepen(self, flat, delimiter='__'):
         result = {}
         grouped = group_by_key(flat, delimiter)
-        for name, ftype in self.named_types.items():
+        for name, ftype in list(self.named_types.items()):
             flatchild = grouped.pop(name, None)
             result[name] = ftype.deepen(flatchild)
         # TODO we may have unmatched data in `grouped`
@@ -254,7 +254,7 @@ class String(Base):
         self.regex_msg = regex_msg if regex_msg else 'Dont match'
 
     def check_data(self):
-        if not isinstance(self.raw_data, (str, unicode)):
+        if not isinstance(self.raw_data, str):
             raise ValidationError('Must be str or unicode instance')
         slen = len(self.raw_data)
 
@@ -300,7 +300,7 @@ class Boolean(Base):
 class DeclarativeMeta(type):
     def __new__(cls, name, bases, attrs):
         fields = OrderedDict()
-        for name, attr in list(attrs.iteritems()): # explicit copy
+        for name, attr in list(attrs.items()): # explicit copy
             # isinstance(attr, type) == attr is a class
             if isinstance(attr, Base):
                 fields[name] = attr
@@ -315,9 +315,7 @@ class DeclarativeMeta(type):
         return type.__new__(cls, name, bases, attrs)
 
 
-class Declarative(Dict):
-    __metaclass__ = DeclarativeMeta
-
+class Declarative(Dict, metaclass=DeclarativeMeta):
     def __init__(self, data, validate=True):
         super(Declarative, self).__init__(*list(self.args), **self.kwargs.copy())
         self.instantiate(data, validate)
@@ -329,7 +327,7 @@ def group_by_key(flat, delimiter='__'):
         return {}
 
     def split_key(flat):
-        for key, value in sorted(flat.iteritems()):
+        for key, value in sorted(flat.items()):
             keys = key.split(delimiter, 1)
             base_key = keys[0]
             child_key = keys[1] if len(keys) == 2 else ''

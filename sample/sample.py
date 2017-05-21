@@ -22,7 +22,7 @@ def hello():
     if request.form:
         form = Form(request.form, False)
         if form.is_valid():
-            print 'Cool!'
+            print('Cool!')
             # Use form.data as validated structure
     else:
         form = Form(validate=False)

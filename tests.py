@@ -29,10 +29,10 @@ def simple_tuple():
 @p.test
 def simple_list():
     PL = procrustes.List(I)
-    pl = PL(xrange(7))
+    pl = PL(range(7))
     v1 = pl.validated_data[0]
     v1.validate()
-    Assert(pl.data) == range(7)
+    Assert(pl.data) == list(range(7))
 
 
 @p.test
@@ -102,20 +102,20 @@ def forms_simple():
     FT = forms.Tuple(forms.String(), forms.String())
     ft = FT()
     widgets = [widget.render() for widget in ft.widgets()]
-    Assert(widgets) == [u'<input id="form__0" name="form__0" parent="" value="">',
-                        u'<input id="form__1" name="form__1" parent="" value="">']
+    Assert(widgets) == ['<input id="form__0" name="form__0" parent="" value="">',
+                        '<input id="form__1" name="form__1" parent="" value="">']
 
     ft = FT(('kuku', 'kuku'))
     widgets = [widget.render() for widget in ft.widgets()]
-    Assert(widgets) == [u'<input id="form__0" name="form__0" parent="" value="kuku">',
-                        u'<input id="form__1" name="form__1" parent="" value="kuku">']
+    Assert(widgets) == ['<input id="form__0" name="form__0" parent="" value="kuku">',
+                        '<input id="form__1" name="form__1" parent="" value="kuku">']
 
     FL = forms.List(forms.String())
     fl = FL(['kuku', 'dsfasfd', 'xcvxczvx'])
     widgets = [widget.render() for widget in fl.widgets() if widget.render()]
-    Assert(widgets) == [u'<input id="form__0" name="form__0" parent="" value="kuku">',
-                        u'<input id="form__1" name="form__1" parent="" value="dsfasfd">',
-                        u'<input id="form__2" name="form__2" parent="" value="xcvxczvx">']
+    Assert(widgets) == ['<input id="form__0" name="form__0" parent="" value="kuku">',
+                        '<input id="form__1" name="form__1" parent="" value="dsfasfd">',
+                        '<input id="form__2" name="form__2" parent="" value="xcvxczvx">']
 
 @p.test
 def forms_dict_field():

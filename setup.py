@@ -3,7 +3,7 @@
 import os.path as op
 act = op.join(op.dirname(__file__), 'venv', 'bin', 'activate_this.py')
 if op.exists(act):
-    execfile(act, {'__file__': act})
+    exec(compile(open(act).read(), act, 'exec'), {'__file__': act})
 
 import os.path
 from setuptools import setup, find_packages
